@@ -23,8 +23,12 @@ const processSale = async (req, res) => {
   try {
     const { id } = req.params;
     let { customerName, customerPhone, customerAddress } = req.body;
-    
-    // Trim to prevent hidden space errors
+
+    // Safety Check: Ensure phone exists before calling toString()
+    if (!customerPhone) {
+      return res.status(400).json({ message: "Phone number is required." });
+    }
+
     const cleanPhone = customerPhone.toString().trim();
 
     // 10-Digit Validation
@@ -32,6 +36,7 @@ const processSale = async (req, res) => {
       return res.status(400).json({ message: "Phone number must be exactly 10 digits." });
     }
 
+    // Update stock (Note: Ensure your Model field is named stockQuantity)
     const updatedMobile = await Mobile.findOneAndUpdate(
       { _id: id, stockQuantity: { $gt: 0 } },
       { $inc: { stockQuantity: -1 } },

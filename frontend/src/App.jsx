@@ -59,7 +59,6 @@ const MobileCard = ({ mobile, onDelete, onPurchase }) => {
   );
 };
 
-// --- Main App ---
 export default function App() {
   const [mobiles, setMobiles] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -74,7 +73,6 @@ export default function App() {
   useEffect(() => {
     fetchMobiles();
     
-    // --- GSAP Character Flip (Video Style) ---
     const tl = gsap.timeline({ repeat: -1 });
     phrases.forEach((phrase) => {
       const charsHTML = phrase.split('').map((char) => 
@@ -108,12 +106,20 @@ export default function App() {
     if (cleanPhone.length !== 10) return setUiError("Phone must be 10 digits.");
 
     try {
-      const { data } = await api.post(`/mobiles/buy/${checkoutItem._id}`, { ...customerInfo, phone: cleanPhone });
+      // FIX: Ensure keys match backend expected fields
+      const { data } = await api.post(`/mobiles/buy/${checkoutItem._id}`, { 
+        customerName: customerInfo.name,
+        customerPhone: cleanPhone,
+        customerAddress: customerInfo.address 
+      });
+      
       setActiveReceipt(data.receipt);
       setCheckoutItem(null);
       setCustomerInfo({ name: '', phone: '', address: '' });
       fetchMobiles();
-    } catch (err) { setUiError(err.response?.data?.message || "Transaction failed"); }
+    } catch (err) { 
+      setUiError(err.response?.data?.message || "Transaction failed"); 
+    }
   };
 
   return (
@@ -135,7 +141,6 @@ export default function App() {
           ))}
         </div>
 
-        {/* Checkout & Receipt Modals logic stays here... */}
         {checkoutItem && (
           <div className="fixed inset-0 z-[110] flex items-center justify-center bg-black/95 backdrop-blur-xl p-4 text-left">
             <div className="apple-glass p-10 rounded-[3rem] max-w-md w-full border border-white/10 shadow-2xl">
@@ -173,4 +178,3 @@ export default function App() {
     </div>
   );
 }
-
