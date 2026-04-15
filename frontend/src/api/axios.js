@@ -1,8 +1,11 @@
 import axios from 'axios';
 
+// IMPORTANT: Use the VITE_ prefix if you are using Vite, 
+// or REACT_APP_ if using Create React App.
+const baseURL = import.meta.env.VITE_API_URL || process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+
 const api = axios.create({
-  // Ensure this matches the PORT in your backend index.js (usually 5000)
-  baseURL: 'http://localhost:5000/api', 
+  baseURL: baseURL,
 });
 
 export default api;
